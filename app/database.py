@@ -3,9 +3,14 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
 
+# Конвертация URL для asyncpg (если Render дает postgres://)
+database_url = settings.database_url
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+
 # Создание асинхронного движка для PostgreSQL
 engine = create_async_engine(
-    settings.database_url,
+    database_url,
     echo=True,
     future=True
 )
