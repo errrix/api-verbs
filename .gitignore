@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.cover
+
+# FastAPI
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+*.log
+
+# Локальные скрипты разработки (не нужны для деплоя)
+start_dev.bat
+start_dev.sh
+psql.sh
+
+# Тестовые файлы API (не нужны для деплоя)
+api_tests.http
+test_*.py
+
+# Исходные данные для импорта (не нужны для деплоя)
+verbs/
+
+# Данные для seed миграций (закоммичены в git)
+# data/ - папка НЕ игнорируется, здесь хранятся SQL дампы
+
+# Alembic
+alembic.ini.bak
+
