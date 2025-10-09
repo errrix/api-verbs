@@ -22,15 +22,20 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Загружает seed данные глаголов, если таблица пустая"""
-    # Проверяем количество записей в таблице verbs
     conn = op.get_bind()
-    result = conn.execute(text("SELECT COUNT(*) FROM verbs"))
-    count = result.scalar()
     
-    # Если данные уже есть - пропускаем
-    if count > 0:
-        print(f"Таблица verbs уже содержит {count} записей. Пропускаем импорт.")
-        return
+    # Проверяем количество записей в таблице verbs
+    try:
+        result = conn.execute(text("SELECT COUNT(*) FROM verbs"))
+        count = result.scalar()
+        
+        # Если данные уже есть - пропускаем
+        if count > 0:
+            print(f"Таблица verbs уже содержит {count} записей. Пропускаем импорт.")
+            return
+    except Exception as e:
+        # Таблица не существует или пустая - продолжаем загрузку
+        print(f"Таблица verbs пустая или только создана. Загружаем данные...")
     
     # Читаем SQL файл и выполняем
     sql_file = Path(__file__).parent.parent.parent / "data" / "verbs_seed.sql"
@@ -44,7 +49,7 @@ def upgrade() -> None:
     with open(sql_file, "r", encoding="utf-8") as f:
         sql_content = f.read()
     
-    # Выполняем SQL (разбиваем на отдельные команды)
+    # Выполняем SQL
     conn.execute(text(sql_content))
     
     print("Данные глаголов успешно загружены!")
