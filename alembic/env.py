@@ -68,8 +68,15 @@ async def run_async_migrations() -> None:
     """
     from sqlalchemy.ext.asyncio import create_async_engine
     
+    # Конвертация URL для asyncpg
+    database_url = settings.database_url
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    
     connectable = create_async_engine(
-        settings.database_url,
+        database_url,
         poolclass=pool.NullPool,
     )
 
