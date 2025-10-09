@@ -1,3 +1,4 @@
+import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
@@ -5,8 +6,15 @@ from app.config import settings
 
 # Конвертация URL для asyncpg (если Render дает postgres://)
 database_url = settings.database_url
+print(f"Original DATABASE_URL: {database_url[:50]}...")  # Debug
+
+# Конвертация postgresql:// и postgres:// в postgresql+asyncpg://
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif database_url.startswith("postgresql://"):
+    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+print(f"Converted DATABASE_URL: {database_url[:50]}...")  # Debug
 
 # Создание асинхронного движка для PostgreSQL
 engine = create_async_engine(
