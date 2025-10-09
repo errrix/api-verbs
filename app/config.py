@@ -1,3 +1,4 @@
+import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +11,13 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore"
     )
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Fly.io устанавливает DATABASE_URL в формате postgres://
+        # Конвертируем в postgresql+asyncpg://
+        if self.database_url.startswith("postgres://"):
+            self.database_url = self.database_url.replace("postgres://", "postgresql+asyncpg://", 1)
 
 
 settings = Settings()
