@@ -18,7 +18,7 @@ COPY . .
 # Expose порт
 EXPOSE 8000
 
-# Запуск приложения (без миграций, запустим их вручную потом)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запуск приложения с миграциями
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 
 
