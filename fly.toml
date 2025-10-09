@@ -4,6 +4,7 @@ app = 'api-verbs'
 primary_region = 'iad'
 
 [build]
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = '8000'
