@@ -4,6 +4,7 @@ app = 'api-verbs'
 primary_region = 'iad'
 
 [build]
+  image = "errrix/api-verbs:latest"
 
 [env]
   PORT = '8000'
