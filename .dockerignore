@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+
+# Tests
+test_*.py
+api_tests.http
+
+# Development scripts
+start_dev.bat
+start_dev.sh
+psql.sh
+
+# Documentation (не нужна в образе)
+README.md
+VERBS_API.md
+
+# Docker
+docker-compose.yml
+Dockerfile
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Verbs JSON (не нужны, есть SQL дамп)
+verbs/
+
