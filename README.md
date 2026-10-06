@@ -1,4 +1,43 @@
-# FastAPI Project
+# API испанских глаголов
+
+Спряжения 1000 испанских глаголов в 24 временах. Данные статичные, поэтому
+раздаются как JSON-файлы с GitHub Pages; FastAPI-приложение с PostgreSQL
+(описано ниже) отдаёт те же данные через базу.
+
+## Статические данные
+
+Сборка из `data/verbs_seed.sql` в папку `dist/` (нужен только Python, без зависимостей):
+
+```bash
+python scripts/build_static.py
+```
+
+При пуше в `main` то же самое делает workflow `.github/workflows/pages.yml` и выкладывает результат на GitHub Pages.
+
+| Файл | Что внутри |
+|---|---|
+| `index.json` | Список глаголов, времён (`id`, `name`, `personal`) и лиц |
+| `verbs/{infinitive}.json` | Все времена одного глагола |
+| `tenses/{id}.json` | Одно время для всех глаголов |
+
+Личные времена — объект `{лицо: форма}`, неличные формы (герундий, инфинитив, причастие) — строка.
+Вспомогательный глагол уже входит в форму:
+
+```json
+{
+  "infinitive": "hablar",
+  "tenses": {
+    "indicativo-presente": {"1s": "hablo", "2s": "hablas", "3s": "habla", "1p": "hablamos", "2p": "habláis", "3p": "hablan"},
+    "indicativo-preterito-perfecto-compuesto": {"1s": "he hablado", "2s": "has hablado", "...": "..."},
+    "imperativo": {"2s": "habla", "3s": "hable", "1p": "hablemos", "2p": "hablad", "3p": "hablen"},
+    "gerundio": "hablando"
+  }
+}
+```
+
+У недостаточных глаголов (`llover`, `acontecer`, `atañer`, `concernir`) есть только формы третьего лица.
+
+# FastAPI-приложение
 
 FastAPI приложение с PostgreSQL базой данных в Docker.
 
