@@ -6,7 +6,7 @@
 
 ## Статические данные
 
-Сборка из `data/verbs_seed.sql` в папку `dist/` (нужен только Python, без зависимостей):
+Сборка из `data/verbs_seed.sql` и `data/translations_ru.json` в папку `dist/` (нужен только Python, без зависимостей):
 
 ```bash
 python scripts/build_static.py
@@ -16,9 +16,10 @@ python scripts/build_static.py
 
 | Файл | Что внутри |
 |---|---|
-| `index.json` | Список глаголов, времён (`id`, `name`, `personal`) и лиц |
-| `verbs/{infinitive}.json` | Все времена одного глагола |
+| `index.json` | Список глаголов, времён (`id`, `name`, `personal`) и лиц; `translations` — список доступных языков перевода (`["ru"]`) |
+| `verbs/{infinitive}.json` | Все времена одного глагола; `translations` — его переводы по языкам (`{"ru": [...]}`) |
 | `tenses/{id}.json` | Одно время для всех глаголов |
+| `translations/{lang}.json` | Переводы инфинитивов всех глаголов на один язык: `{инфинитив: [значения]}` |
 
 Личные времена — объект `{лицо: форма}`, неличные формы (герундий, инфинитив, причастие) — строка.
 Вспомогательный глагол уже входит в форму:
@@ -26,6 +27,7 @@ python scripts/build_static.py
 ```json
 {
   "infinitive": "hablar",
+  "translations": {"ru": ["говорить", "разговаривать"]},
   "tenses": {
     "indicativo-presente": {"1s": "hablo", "2s": "hablas", "3s": "habla", "1p": "hablamos", "2p": "habláis", "3p": "hablan"},
     "indicativo-preterito-perfecto-compuesto": {"1s": "he hablado", "2s": "has hablado", "...": "..."},
@@ -36,6 +38,10 @@ python scripts/build_static.py
 ```
 
 У недостаточных глаголов (`llover`, `acontecer`, `atañer`, `concernir`) есть только формы третьего лица.
+
+Переводы лежат в `data/translations_ru.json`: объект `{инфинитив: [значения]}`, от одного до трёх значений,
+первое — основное. Сборка падает с описанием ошибки, если у какого-то глагола нет перевода, в файле есть
+лишние ключи или значения — не непустые строки.
 
 # FastAPI-приложение
 
