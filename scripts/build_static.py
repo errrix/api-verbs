@@ -9,6 +9,7 @@
     tenses/{id}.json         — одно время для всех глаголов
     translations/{lang}.json — переводы всех глаголов на один язык
     themes.json              — глаголы по темам: {тема: [глаголы от частых к редким]}
+    frequency.json           — все глаголы от частых к редким
 
 Запуск: python scripts/build_static.py [папка_результата]
 """
@@ -27,6 +28,7 @@ TRANSLATION_LANGUAGES = ["ru", "en", "pt", "fr", "de", "it"]
 TRANSLATION_FILES = {lang: ROOT / "data" / f"translations_{lang}.json" for lang in TRANSLATION_LANGUAGES}
 MAX_TRANSLATIONS = 3
 THEMES_FILE = ROOT / "data" / "themes.json"
+FREQUENCY_FILE = ROOT / "data" / "frequency.json"
 
 PERSONS = ["1s", "2s", "3s", "1p", "2p", "3p"]
 
@@ -80,6 +82,20 @@ def load_themes(path: Path, infinitives: list[str]) -> dict[str, list[str]]:
     return themes
 
 
+def load_frequency(path: Path, infinitives: list[str]) -> list[str]:
+    """Читает порядок глаголов по частоте и проверяет, что в нём ровно глаголы из списка"""
+    with open(path, "r", encoding="utf-8") as f:
+        ranked = json.load(f)
+    if len(ranked) != len(set(ranked)) or set(ranked) != set(infinitives):
+        missing = sorted(set(infinitives) - set(ranked))
+        extra = sorted(set(ranked) - set(infinitives))
+        raise ValueError(
+            f"{path.name} не совпадает со списком глаголов (python scripts/rank_verbs.py): "
+            f"нет {', '.join(missing) or '—'}; лишние {', '.join(extra) or '—'}; повторы: {len(ranked) - len(set(ranked))}"
+        )
+    return ranked
+
+
 def write_json(path: Path, data: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -101,6 +117,7 @@ def build(out_dir: Path) -> None:
 
     translations = {lang: load_translations(path, list(by_verb)) for lang, path in TRANSLATION_FILES.items()}
     themes = load_themes(THEMES_FILE, list(by_verb))
+    frequency = load_frequency(FREQUENCY_FILE, list(by_verb))
 
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -118,6 +135,7 @@ def build(out_dir: Path) -> None:
         )
 
     write_json(out_dir / "themes.json", themes)
+    write_json(out_dir / "frequency.json", frequency)
 
     for lang, values in translations.items():
         write_json(out_dir / "translations" / f"{lang}.json", values)
