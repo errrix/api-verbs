@@ -8,6 +8,7 @@
     verbs/{infinitive}.json  — все формы и переводы одного глагола
     tenses/{id}.json         — одно время для всех глаголов
     translations/{lang}.json — переводы всех глаголов на один язык
+    themes.json              — глаголы по темам: {тема: [глаголы от частых к редким]}
 
 Запуск: python scripts/build_static.py [папка_результата]
 """
@@ -25,6 +26,7 @@ CONJUGATIONS_FILE = ROOT / "data" / "conjugations.json"
 TRANSLATION_LANGUAGES = ["ru", "en", "pt", "fr", "de", "it"]
 TRANSLATION_FILES = {lang: ROOT / "data" / f"translations_{lang}.json" for lang in TRANSLATION_LANGUAGES}
 MAX_TRANSLATIONS = 3
+THEMES_FILE = ROOT / "data" / "themes.json"
 
 PERSONS = ["1s", "2s", "3s", "1p", "2p", "3p"]
 
@@ -61,6 +63,23 @@ def load_translations(path: Path, infinitives: list[str]) -> dict[str, list[str]
     return {infinitive: translations[infinitive] for infinitive in infinitives}
 
 
+def load_themes(path: Path, infinitives: list[str]) -> dict[str, list[str]]:
+    """Читает темы {тема: [глаголы]} и проверяет, что в них только глаголы из списка и нет пустых тем"""
+    with open(path, "r", encoding="utf-8") as f:
+        themes = json.load(f)
+    known = set(infinitives)
+    errors = [
+        f"{theme}: нет таких глаголов: {', '.join(sorted(set(verbs) - known))}"
+        for theme, verbs in themes.items()
+        if set(verbs) - known
+    ]
+    errors += [f"{theme}: пустая тема" for theme, verbs in themes.items() if not verbs]
+    errors += [f"{theme}: повторы" for theme, verbs in themes.items() if len(set(verbs)) != len(verbs)]
+    if errors:
+        raise ValueError(f"Ошибки в {path.name}:\n" + "\n".join(f"  - {error}" for error in errors))
+    return themes
+
+
 def write_json(path: Path, data: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -81,6 +100,7 @@ def build(out_dir: Path) -> None:
             by_tense[tense_id][infinitive] = built
 
     translations = {lang: load_translations(path, list(by_verb)) for lang, path in TRANSLATION_FILES.items()}
+    themes = load_themes(THEMES_FILE, list(by_verb))
 
     if out_dir.exists():
         shutil.rmtree(out_dir)
@@ -96,6 +116,8 @@ def build(out_dir: Path) -> None:
             out_dir / "verbs" / f"{infinitive}.json",
             {"infinitive": infinitive, "translations": verb_translations, "tenses": verb_tenses},
         )
+
+    write_json(out_dir / "themes.json", themes)
 
     for lang, values in translations.items():
         write_json(out_dir / "translations" / f"{lang}.json", values)
