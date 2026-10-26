@@ -1,0 +1,13 @@
+{
+  "name": "api-verbs-data",
+  "private": true,
+  "type": "module",
+  "description": "Генерация спряжений из conjugate-esp",
+  "scripts": {
+    "generate": "node scripts/generate_conjugations.mjs",
+    "verb-forms": "node scripts/dump_verb_forms.mjs"
+  },
+  "devDependencies": {
+    "@jirimracek/conjugate-esp": "2.3.6"
+  }
+}

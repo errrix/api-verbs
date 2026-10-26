@@ -64,3 +64,6 @@ verbs/
 # Alembic
 alembic.ini.bak
 
+
+# Node
+node_modules/
