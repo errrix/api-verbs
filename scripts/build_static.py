@@ -21,7 +21,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 CONJUGATIONS_FILE = ROOT / "data" / "conjugations.json"
-TRANSLATION_FILES = {"ru": ROOT / "data" / "translations_ru.json"}
+# Языки переводов: ru — эталон, по его значениям переведены остальные
+TRANSLATION_LANGUAGES = ["ru", "en", "pt", "fr", "de", "it"]
+TRANSLATION_FILES = {lang: ROOT / "data" / f"translations_{lang}.json" for lang in TRANSLATION_LANGUAGES}
 MAX_TRANSLATIONS = 3
 
 PERSONS = ["1s", "2s", "3s", "1p", "2p", "3p"]
